@@ -1,0 +1,2778 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>薪跳 MVP</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --surface-strong: #f9fafb;
+      --text: #111827;
+      --muted: #6b7280;
+      --soft: #e5e7eb;
+      --line: #d1d5db;
+      --green: #19a15f;
+      --gold: #d99a1e;
+      --red: #d94848;
+      --shadow: 0 18px 50px rgba(17, 24, 39, 0.08);
+      --radius: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      width: min(100%, 430px);
+      min-height: calc(100vh - 36px);
+      background: var(--surface);
+      border: 1px solid rgba(17, 24, 39, 0.05);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      padding: 18px 20px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 58px;
+    }
+
+    .brand {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      background: #f3f4f6;
+      color: #111827;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
+    .icon-button:active,
+    .primary:active,
+    .ghost:active,
+    .currency-item:active {
+      transform: scale(0.98);
+    }
+
+    main {
+      flex: 1;
+      padding: 0 20px 22px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .hero-copy {
+      margin: 20px 0 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .subtext {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .field-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      color: #374151;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      min-height: 52px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: var(--surface-strong);
+      padding: 0 14px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: #9ca3af;
+      background: #ffffff;
+    }
+
+    .prefix {
+      color: var(--muted);
+      margin-right: 8px;
+      min-width: 24px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 17px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .switch-field {
+      min-height: 56px;
+      padding: 0 14px;
+      border: 1px solid var(--soft);
+      border-radius: var(--radius);
+      background: var(--surface-strong);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .switch-copy {
+      min-width: 0;
+    }
+
+    .switch-title {
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .switch-desc {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .switch {
+      position: relative;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 28px;
+    }
+
+    .switch input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .switch-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: #d1d5db;
+      transition: background 0.2s;
+    }
+
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 5px rgba(17, 24, 39, 0.18);
+      transition: transform 0.2s;
+    }
+
+    .switch input:checked + .switch-track {
+      background: #111827;
+    }
+
+    .switch input:checked + .switch-track::after {
+      transform: translateX(20px);
+    }
+
+    .tax-fields {
+      display: grid;
+      gap: 14px;
+    }
+
+    .error {
+      min-height: 20px;
+      color: var(--red);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .primary,
+    .ghost {
+      width: 100%;
+      min-height: 52px;
+      border-radius: var(--radius);
+      font-weight: 700;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .primary {
+      background: #111827;
+      color: #ffffff;
+    }
+
+    .primary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .ghost {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .form-actions {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 15px;
+      background: #eef8f2;
+      color: #08733f;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .currency-chip {
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 15px;
+      background: #f3f4f6;
+      color: #111827;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .amount-zone {
+      padding: 28px 0 14px;
+      text-align: center;
+    }
+
+    .amount-label {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .amount {
+      margin: 0;
+      font-size: clamp(42px, 13vw, 64px);
+      line-height: 1;
+      letter-spacing: 0;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .amount.bump {
+      animation: bump 0.28s ease-out;
+    }
+
+    @keyframes bump {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.025); }
+      100% { transform: scale(1); }
+    }
+
+    .wallet-stage {
+      position: relative;
+      height: 188px;
+      margin: 8px 0 20px;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: #fafafa;
+      border: 1px solid #eeeeee;
+    }
+
+    .wallet-stage::after {
+      content: "";
+      position: absolute;
+      left: calc(50% + 50px);
+      bottom: 68px;
+      width: 104px;
+      height: 15px;
+      z-index: 8;
+      transform: translateX(-50%);
+      border-radius: 9px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), transparent 28%),
+        #0d1519;
+      box-shadow:
+        inset 0 3px 8px rgba(0,0,0,0.62),
+        0 1px 0 rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+
+    .flow-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .wallet {
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      width: 232px;
+      height: 128px;
+      transform: translateX(-50%);
+      perspective: 620px;
+      filter: drop-shadow(0 18px 18px rgba(17, 24, 39, 0.22));
+    }
+
+    .wallet::before {
+      content: "";
+      position: absolute;
+      left: 103px;
+      top: 45px;
+      width: 106px;
+      height: 22px;
+      z-index: 2;
+      border-radius: 13px 13px 0 0;
+      background: linear-gradient(180deg, rgba(236, 192, 94, 0.18), rgba(12, 20, 24, 0.94));
+      box-shadow: inset 0 5px 9px rgba(0,0,0,0.48);
+    }
+
+    .wallet-body {
+      position: absolute;
+      left: 96px;
+      top: 48px;
+      width: 124px;
+      height: 76px;
+      z-index: 3;
+      border-radius: 9px 18px 20px 9px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 68% 78%, rgba(0,0,0,0.16) 0 1px, transparent 1.5px),
+        repeating-linear-gradient(28deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 5px),
+        linear-gradient(145deg, #314148 0%, #1d2a30 48%, #111b20 100%);
+      background-size: 12px 12px, 16px 16px, auto, auto;
+      border: 1px solid rgba(0, 0, 0, 0.48);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -14px 22px rgba(0,0,0,0.26),
+        inset 0 0 0 5px rgba(255,255,255,0.025);
+    }
+
+    .wallet-body::before {
+      content: "";
+      position: absolute;
+      inset: 8px 8px 9px;
+      border-radius: 6px 13px 15px 6px;
+      border: 1px dashed rgba(237, 199, 119, 0.34);
+      pointer-events: none;
+    }
+
+    .wallet-body::after {
+      content: "";
+      position: absolute;
+      left: 13px;
+      right: 12px;
+      top: 14px;
+      height: 16px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.2));
+      border-top: 1px solid rgba(255,255,255,0.07);
+      box-shadow: inset 0 8px 12px rgba(0,0,0,0.28);
+      pointer-events: none;
+    }
+
+    .wallet-flap {
+      position: absolute;
+      left: 0;
+      top: 48px;
+      width: 118px;
+      height: 74px;
+      z-index: 2;
+      border-radius: 20px 6px 6px 20px;
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,0.1) 0 1px, transparent 1.5px),
+        repeating-linear-gradient(32deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 5px),
+        linear-gradient(145deg, #455861 0%, #2b3b42 52%, #19252b 100%);
+      border: 1px solid rgba(0, 0, 0, 0.42);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.16),
+        inset 0 -10px 18px rgba(0,0,0,0.2),
+        8px 10px 18px rgba(0,0,0,0.13);
+      transform: rotateZ(-3deg) skewY(-3deg);
+      transform-origin: right center;
+    }
+
+    .wallet-flap::before {
+      content: "";
+      position: absolute;
+      right: 6px;
+      top: 7px;
+      bottom: 7px;
+      width: 9px;
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.08), rgba(0,0,0,0.22)),
+        repeating-linear-gradient(180deg, rgba(237,199,119,0.34) 0 3px, transparent 3px 7px);
+      box-shadow: inset 2px 0 4px rgba(0,0,0,0.22);
+    }
+
+    .wallet-flap::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      bottom: 8px;
+      right: 20px;
+      width: 1px;
+      background: repeating-linear-gradient(180deg, rgba(245, 211, 139, 0.62) 0 4px, transparent 4px 8px);
+      opacity: 0.68;
+    }
+
+    .wallet-mouth {
+      position: absolute;
+      left: 110px;
+      top: 61px;
+      width: 100px;
+      height: 15px;
+      z-index: 6;
+      border-radius: 9px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), transparent 28%),
+        #0d1519;
+      box-shadow:
+        inset 0 3px 8px rgba(0,0,0,0.62),
+        0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .wallet-lock {
+      position: absolute;
+      right: 18px;
+      bottom: 24px;
+      width: 30px;
+      height: 30px;
+      z-index: 7;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 32% 28%, #fff1b8 0 14%, transparent 15%),
+        linear-gradient(145deg, #e6bd55 0%, #b78322 58%, #75500d 100%);
+      color: #332100;
+      display: grid;
+      place-items: center;
+      font-size: 0;
+      font-weight: 900;
+      border: 1px solid rgba(72, 46, 0, 0.34);
+      box-shadow:
+        inset 0 1px 1px rgba(255,255,255,0.42),
+        inset 0 -4px 8px rgba(0,0,0,0.24),
+        0 5px 10px rgba(0,0,0,0.18);
+    }
+
+    .wallet.pop {
+      animation: walletPop 0.35s ease-out;
+    }
+
+    @keyframes walletPop {
+      0% { transform: translateX(-50%) scale(1); }
+      45% { transform: translateX(-50%) scale(1.035); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+
+    .money {
+      position: absolute;
+      top: var(--from-y);
+      left: var(--from-x);
+      color: var(--money-ink);
+      transform: translate3d(0, 0, 0) rotate(var(--rotate));
+      transform-origin: center;
+      animation: flyMoney var(--duration) cubic-bezier(.16,.84,.22,1) forwards;
+      filter: drop-shadow(0 12px 14px rgba(17, 24, 39, 0.26));
+      will-change: transform, opacity;
+      pointer-events: none;
+    }
+
+    .money.note {
+      width: 84px;
+      height: 48px;
+      border-radius: 3px;
+      overflow: hidden;
+      background:
+        linear-gradient(105deg, rgba(255,255,255,0.32), transparent 24%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.12) 0 1px, transparent 1px 3px),
+        repeating-linear-gradient(90deg, rgba(17,24,39,0.075) 0 1px, transparent 1px 4px),
+        var(--money-color);
+      border: 1px solid rgba(17, 24, 39, 0.28);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.42),
+        inset 0 -5px 10px rgba(17, 24, 39, 0.13);
+    }
+
+    .money.cny-stack {
+      width: 96px;
+      height: 52px;
+      border-radius: 4px;
+      overflow: visible;
+      background: transparent;
+      color: #8f1834;
+      filter: drop-shadow(0 13px 15px rgba(96, 27, 38, 0.24));
+    }
+
+    .rmb-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 4px;
+      border: 1px solid rgba(126, 39, 55, 0.24);
+      background:
+        linear-gradient(104deg, rgba(255,255,255,0.72) 0 23%, transparent 24% 100%),
+        radial-gradient(circle at 70% 43%, rgba(162, 24, 55, 0.46) 0 20%, transparent 21%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.24) 0 1px, transparent 1px 3px),
+        linear-gradient(100deg, #fff1f3 0%, #f8c9d3 34%, #e95f7f 64%, #c72e55 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.72),
+        inset 0 -4px 9px rgba(117, 29, 48, 0.2);
+    }
+
+    .rmb-layer:nth-child(1) {
+      transform: translate(9px, 13px);
+      filter: brightness(0.82);
+      opacity: 0.78;
+    }
+
+    .rmb-layer:nth-child(2) {
+      transform: translate(5px, 7px);
+      filter: brightness(0.9);
+      opacity: 0.9;
+    }
+
+    .rmb-layer:nth-child(3) {
+      transform: translate(0, 0);
+    }
+
+    .rmb-band {
+      position: absolute;
+      left: 42px;
+      top: -2px;
+      width: 18px;
+      height: 58px;
+      z-index: 3;
+      background:
+        linear-gradient(90deg, rgba(230,230,222,0.9), #ffffff 48%, rgba(217,217,208,0.9));
+      border-left: 1px solid rgba(80, 80, 70, 0.12);
+      border-right: 1px solid rgba(80, 80, 70, 0.12);
+      box-shadow: 0 1px 2px rgba(17, 24, 39, 0.12);
+    }
+
+    .rmb-value {
+      position: absolute;
+      right: 6px;
+      top: 4px;
+      z-index: 4;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 900;
+      color: #c71f4d;
+    }
+
+    .rmb-title {
+      position: absolute;
+      left: 8px;
+      top: 10px;
+      z-index: 4;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #b51c3e;
+    }
+
+    .rmb-portrait {
+      position: absolute;
+      right: 22px;
+      top: 8px;
+      z-index: 2;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 47% 33%, rgba(255,255,255,0.32) 0 12%, transparent 13%),
+        radial-gradient(circle, rgba(171, 31, 62, 0.48) 0 48%, transparent 49%);
+      border: 1px solid rgba(134, 28, 52, 0.24);
+    }
+
+    .rmb-flower {
+      position: absolute;
+      left: 12px;
+      bottom: 7px;
+      z-index: 4;
+      width: 22px;
+      height: 16px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, #e27d3e 0 18%, transparent 19%),
+        radial-gradient(circle at 24% 44%, rgba(222, 60, 94, 0.62) 0 24%, transparent 25%),
+        radial-gradient(circle at 76% 44%, rgba(222, 60, 94, 0.62) 0 24%, transparent 25%);
+      opacity: 0.8;
+    }
+
+    .rmb-serial {
+      position: absolute;
+      left: 8px;
+      bottom: 6px;
+      z-index: 4;
+      font-size: 6px;
+      font-weight: 800;
+      color: #2d65a7;
+      letter-spacing: .8px;
+      opacity: 0.8;
+    }
+
+    .money.note::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border: 1px solid rgba(17, 24, 39, 0.28);
+      border-radius: 2px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14);
+    }
+
+    .money.note::after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      right: 8px;
+      top: 8px;
+      border-radius: 50%;
+      border: 1px solid rgba(17, 24, 39, 0.24);
+      background:
+        radial-gradient(circle, transparent 0 38%, rgba(255,255,255,0.18) 39% 55%, transparent 56%),
+        var(--money-soft);
+    }
+
+    .note-band {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 19px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.04)),
+        repeating-linear-gradient(0deg, rgba(17, 24, 39, 0.12) 0 1px, transparent 1px 4px);
+      border-right: 1px solid rgba(17, 24, 39, 0.14);
+    }
+
+    .note-value {
+      position: absolute;
+      left: 5px;
+      top: 5px;
+      min-width: 20px;
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .note-value-corner {
+      position: absolute;
+      right: 6px;
+      bottom: 4px;
+      z-index: 1;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 900;
+      opacity: 0.82;
+    }
+
+    .note-title {
+      position: absolute;
+      left: 24px;
+      top: 5px;
+      max-width: 46px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 6px;
+      line-height: 1;
+      font-weight: 800;
+      opacity: 0.78;
+    }
+
+    .note-portrait {
+      position: absolute;
+      right: 10px;
+      top: 8px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      color: var(--money-deep);
+      background:
+        radial-gradient(circle at 45% 38%, rgba(255,255,255,0.38) 0 18%, transparent 19%),
+        radial-gradient(circle, rgba(255,255,255,0.28) 0 49%, transparent 50%),
+        var(--money-soft);
+      border: 1px solid rgba(17, 24, 39, 0.24);
+      font-size: 13px;
+      font-weight: 900;
+      opacity: 0.9;
+    }
+
+    .note-code {
+      position: absolute;
+      left: 24px;
+      bottom: 6px;
+      font-size: 7px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .4px;
+      color: var(--money-deep);
+    }
+
+    .note-serial {
+      position: absolute;
+      left: 24px;
+      bottom: 15px;
+      font-size: 5px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: .5px;
+      color: var(--money-deep);
+      opacity: 0.76;
+    }
+
+    .note-lines {
+      position: absolute;
+      left: 25px;
+      right: 42px;
+      top: 18px;
+      height: 12px;
+      background:
+        repeating-linear-gradient(180deg, rgba(17, 24, 39, 0.22) 0 1px, transparent 1px 4px),
+        linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      opacity: 0.5;
+    }
+
+    .note-seal {
+      position: absolute;
+      right: 40px;
+      bottom: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.26);
+      border: 1px solid rgba(17, 24, 39, 0.24);
+    }
+
+    .note-watermark {
+      position: absolute;
+      inset: 5px;
+      display: grid;
+      place-items: center;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+      color: rgba(255,255,255,0.18);
+      text-shadow: 0 1px 0 rgba(17, 24, 39, 0.08);
+    }
+
+    .note-ribbon {
+      position: absolute;
+      left: 46px;
+      top: -8px;
+      width: 8px;
+      height: 64px;
+      transform: rotate(18deg);
+      background: rgba(255,255,255,0.18);
+      border-left: 1px solid rgba(17, 24, 39, 0.08);
+      border-right: 1px solid rgba(17, 24, 39, 0.08);
+    }
+
+    .money.coin {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 34% 25%, rgba(255,255,255,0.9) 0 8%, transparent 9%),
+        repeating-radial-gradient(circle, rgba(255,255,255,0.18) 0 1px, transparent 1px 4px),
+        radial-gradient(circle, var(--money-soft) 0 39%, var(--money-color) 40% 68%, var(--money-deep) 69% 100%);
+      border: 1px solid rgba(17, 24, 39, 0.18);
+      box-shadow:
+        inset 0 0 0 3px rgba(255,255,255,0.28),
+        inset 0 0 0 6px rgba(17,24,39,0.06),
+        inset 0 -7px 10px rgba(17, 24, 39, 0.18);
+    }
+
+    .coin-inner {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(17, 24, 39, 0.2);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 900;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .coin-mark {
+      display: block;
+      margin-bottom: 1px;
+      font-size: 8px;
+      opacity: 0.65;
+    }
+
+    .coin-code {
+      display: block;
+      margin-top: 1px;
+      font-size: 6px;
+      letter-spacing: .2px;
+      opacity: 0.75;
+    }
+
+    @keyframes flyMoney {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.92) rotate(var(--rotate));
+      }
+      10% {
+        opacity: 1;
+      }
+      58% {
+        opacity: 1;
+        transform: translate3d(var(--arc-x), var(--arc-y), 0) scale(1.04) rotate(calc(var(--rotate) + 10deg));
+      }
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--to-x), var(--to-y), 0) scale(0.34) rotate(calc(var(--rotate) + 16deg));
+      }
+    }
+
+    .progress-block {
+      margin: 0 0 18px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #eceff1;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: var(--green);
+      transition: width 0.4s ease;
+    }
+
+    .work-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0 18px;
+    }
+
+    .small-action {
+      min-height: 42px;
+      border-radius: var(--radius);
+      background: #111827;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .small-action.secondary {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .small-action:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .slack-panel {
+      position: relative;
+      overflow: hidden;
+      margin: -4px 0 18px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 12% 16%, rgba(255, 215, 141, 0.34) 0 18%, transparent 19%),
+        radial-gradient(circle at 90% 12%, rgba(139, 213, 255, 0.28) 0 16%, transparent 17%),
+        linear-gradient(135deg, #fff9e8 0%, #f8fbff 56%, #fff5f8 100%);
+      border: 1px solid #f3e5bf;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+    }
+
+    .slack-panel.active-poop {
+      background:
+        radial-gradient(circle at 16% 18%, rgba(255, 207, 142, 0.5) 0 18%, transparent 19%),
+        radial-gradient(circle at 86% 14%, rgba(255, 237, 190, 0.38) 0 16%, transparent 17%),
+        linear-gradient(135deg, #fff4df 0%, #fffaf0 55%, #fff7e8 100%);
+    }
+
+    .slack-panel.active-slack {
+      background:
+        radial-gradient(circle at 12% 16%, rgba(132, 203, 255, 0.36) 0 18%, transparent 19%),
+        radial-gradient(circle at 88% 10%, rgba(187, 247, 208, 0.36) 0 16%, transparent 17%),
+        linear-gradient(135deg, #eef8ff 0%, #f7fff9 58%, #fff8ed 100%);
+    }
+
+    .slack-panel::before,
+    .slack-panel::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .slack-panel::before {
+      width: 12px;
+      height: 12px;
+      right: 32px;
+      top: 56px;
+      background: rgba(25, 161, 95, 0.22);
+    }
+
+    .slack-panel::after {
+      width: 8px;
+      height: 8px;
+      right: 72px;
+      top: 82px;
+      background: rgba(217, 154, 30, 0.26);
+    }
+
+    .slack-panel.active-poop::before,
+    .slack-panel.active-poop::after,
+    .slack-panel.active-slack::before,
+    .slack-panel.active-slack::after {
+      animation: cuteBubble 1.7s ease-in-out infinite;
+      opacity: 1;
+    }
+
+    .slack-panel.active-slack::after {
+      animation-delay: 0.45s;
+    }
+
+    @keyframes cuteBubble {
+      0% { transform: translateY(8px) scale(0.75); opacity: 0; }
+      25% { opacity: 1; }
+      100% { transform: translateY(-22px) scale(1.1); opacity: 0; }
+    }
+
+    .slack-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .slack-title {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .slack-live {
+      color: #8a5a0a;
+      font-size: 12px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .slack-visual {
+      position: relative;
+      height: 70px;
+      margin: 0 0 12px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.52);
+      border: 1px solid rgba(255,255,255,0.72);
+      overflow: hidden;
+    }
+
+    .pond-line {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 14px;
+      height: 8px;
+      border-radius: 8px;
+      background:
+        repeating-linear-gradient(90deg, rgba(96, 165, 250, 0.28) 0 12px, transparent 12px 20px),
+        rgba(255,255,255,0.64);
+    }
+
+    .cute-fish {
+      position: absolute;
+      left: 28px;
+      top: 22px;
+      width: 48px;
+      height: 26px;
+      border-radius: 50% 45% 45% 50%;
+      background: linear-gradient(135deg, #8bd3ff, #36a3e8);
+      box-shadow: inset -8px -4px 8px rgba(0,0,0,0.08);
+      animation: fishIdle 2.2s ease-in-out infinite;
+    }
+
+    .cute-fish::before {
+      content: "";
+      position: absolute;
+      left: -13px;
+      top: 5px;
+      width: 18px;
+      height: 17px;
+      background: #36a3e8;
+      clip-path: polygon(100% 50%, 0 0, 0 100%);
+    }
+
+    .cute-fish::after {
+      content: "";
+      position: absolute;
+      right: 9px;
+      top: 7px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #111827;
+      box-shadow: 8px 9px 0 -2px rgba(17,24,39,0.3);
+    }
+
+    .cute-roll {
+      position: absolute;
+      right: 34px;
+      top: 17px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, #f8fafc 0 21%, #dfe6ee 22% 33%, transparent 34%),
+        linear-gradient(135deg, #ffffff, #e7edf3);
+      border: 1px solid rgba(148, 163, 184, 0.42);
+      box-shadow: inset -7px -6px 10px rgba(148, 163, 184, 0.18), 0 8px 16px rgba(17, 24, 39, 0.08);
+      animation: rollIdle 2.4s ease-in-out infinite;
+    }
+
+    .cute-roll::after {
+      content: "";
+      position: absolute;
+      left: 26px;
+      top: 25px;
+      width: 24px;
+      height: 16px;
+      border-radius: 0 0 7px 7px;
+      background: linear-gradient(180deg, #ffffff, #e7edf3);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+    }
+
+    .cute-coin {
+      position: absolute;
+      left: 50%;
+      top: 19px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #ffe29b, #d99a1e);
+      color: #5d3a00;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 7px 12px rgba(93, 58, 0, 0.14);
+      animation: coinBob 1.4s ease-in-out infinite;
+    }
+
+    .slack-panel.active-poop .cute-roll,
+    .slack-panel.active-slack .cute-fish {
+      animation-duration: 0.8s;
+    }
+
+    .slack-panel.active-poop .cute-coin,
+    .slack-panel.active-slack .cute-coin {
+      animation: coinPop 0.9s ease-in-out infinite;
+    }
+
+    @keyframes fishIdle {
+      0%, 100% { transform: translateX(0) rotate(-2deg); }
+      50% { transform: translateX(6px) rotate(2deg); }
+    }
+
+    @keyframes rollIdle {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-3px) rotate(5deg); }
+    }
+
+    @keyframes coinBob {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.04); }
+    }
+
+    @keyframes coinPop {
+      0% { transform: translateY(8px) scale(0.8); opacity: 0; }
+      35% { opacity: 1; }
+      100% { transform: translateY(-18px) scale(1.12); opacity: 0; }
+    }
+
+    .timer-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .timer-button {
+      min-height: 44px;
+      border-radius: var(--radius);
+      background: #111827;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .timer-button.poop {
+      background: #7c4a18;
+    }
+
+    .timer-button.active {
+      background: #b91c1c;
+    }
+
+    .slack-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .slack-stat {
+      min-height: 68px;
+      padding: 10px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.66);
+      border: 1px solid rgba(179, 126, 33, 0.16);
+    }
+
+    .slack-stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .slack-stat-value {
+      margin-top: 7px;
+      color: #111827;
+      font-size: 15px;
+      line-height: 1.1;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .slack-subtext {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 74px;
+      padding: 13px;
+      border-radius: var(--radius);
+      background: #f8fafc;
+      border: 1px solid #edf0f3;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      margin-top: 8px;
+      font-size: 18px;
+      line-height: 1.1;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .insight-panel {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: #f8fafc;
+      border: 1px solid #edf0f3;
+    }
+
+    .insight-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .insight-title {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .insight-summary {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .chart {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      min-height: 142px;
+      align-items: end;
+    }
+
+    .chart-day {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+    }
+
+    .bars {
+      height: 96px;
+      width: 100%;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 3px;
+    }
+
+    .bar {
+      width: 9px;
+      min-height: 4px;
+      border-radius: 5px 5px 2px 2px;
+      transition: height 0.35s ease;
+    }
+
+    .bar.hours {
+      background: #111827;
+    }
+
+    .bar.rate {
+      background: #19a15f;
+    }
+
+    .chart-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .chart-empty {
+      grid-column: 1 / -1;
+      align-self: center;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #111827;
+    }
+
+    .legend-dot.rate {
+      background: #19a15f;
+    }
+
+    .drawer {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      align-items: end;
+      background: rgba(17, 24, 39, 0.28);
+      padding: 12px;
+      z-index: 10;
+    }
+
+    .drawer-panel {
+      width: min(100%, 430px);
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 20px 20px 14px 14px;
+      padding: 10px;
+      box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.18);
+    }
+
+    .drawer-title {
+      padding: 10px 8px 8px;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .currency-item {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .currency-item:hover {
+      background: #f7f7f8;
+    }
+
+    .currency-name {
+      font-weight: 700;
+    }
+
+    .currency-note {
+      padding: 8px 8px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 440px) {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+
+      .app {
+        width: 100%;
+        min-height: 100vh;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .wallet-stage {
+        height: 174px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">薪跳</div>
+      <button class="icon-button hidden" id="settingsButton" type="button" aria-label="设置">⚙</button>
+    </header>
+
+    <main>
+      <section id="setupView">
+        <div class="hero-copy">
+          <h1>每一秒，都有薪跳。</h1>
+          <p class="subtext">输入月薪和工作时间，实时看到今天已经赚了多少。所有数据只保存在本机。</p>
+        </div>
+
+        <form id="setupForm" novalidate>
+          <div class="field-list">
+            <div class="field">
+              <label for="salaryInput">月薪</label>
+              <div class="input-wrap">
+                <span class="prefix" id="salaryPrefix">¥</span>
+                <input id="salaryInput" inputmode="decimal" placeholder="例如 12000" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="currencyInput">币种</label>
+              <div class="input-wrap">
+                <select id="currencyInput"></select>
+              </div>
+              <div class="hint">切换币种只改变展示单位，不进行汇率换算。</div>
+            </div>
+
+            <div class="switch-field">
+              <div class="switch-copy">
+                <div class="switch-title">查看税后收入</div>
+                <div class="switch-desc">按工资薪金月度速算扣除法估算</div>
+              </div>
+              <label class="switch" aria-label="查看税后收入">
+                <input id="taxEnabledInput" type="checkbox" />
+                <span class="switch-track"></span>
+              </label>
+            </div>
+
+            <div class="tax-fields hidden" id="taxFields">
+              <div class="field">
+                <label for="socialDeductionInput">五险一金</label>
+                <div class="input-wrap">
+                  <span class="prefix" id="socialPrefix">¥</span>
+                  <input id="socialDeductionInput" inputmode="decimal" placeholder="每月个人缴纳金额" autocomplete="off" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="specialDeductionInput">专项附加扣除</label>
+                <div class="input-wrap">
+                  <span class="prefix" id="specialPrefix">¥</span>
+                  <input id="specialDeductionInput" inputmode="decimal" placeholder="例如房贷、租房、赡养老人" autocomplete="off" />
+                </div>
+                <div class="hint">专项附加扣除只用于减税，不当作实际到手扣款。</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="workDaysInput">每月工作天数</label>
+              <div class="input-wrap">
+                <input id="workDaysInput" type="number" min="1" max="31" step="1" value="22" />
+              </div>
+              <div class="hint">常见双休默认 22 天。</div>
+            </div>
+
+            <div class="field">
+              <label for="startTimeInput">上班时间</label>
+              <div class="input-wrap">
+                <input id="startTimeInput" type="time" value="09:00" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="endTimeInput">下班时间</label>
+              <div class="input-wrap">
+                <input id="endTimeInput" type="time" value="18:00" />
+              </div>
+            </div>
+          </div>
+
+          <div class="error" id="formError" role="alert"></div>
+
+          <div class="form-actions">
+            <button class="primary" id="startButton" type="submit">开始赚钱</button>
+            <button class="ghost hidden" id="cancelEditButton" type="button">取消修改</button>
+            <button class="ghost hidden" id="resetButton" type="button">重置设置</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="hidden" id="homeView">
+        <div class="status-row">
+          <div class="status-pill" id="statusPill">
+            <span class="status-dot"></span>
+            <span id="statusText">工作中</span>
+          </div>
+          <button class="currency-chip" id="currencyButton" type="button">CNY ¥</button>
+        </div>
+
+        <div class="amount-zone">
+          <p class="amount-label" id="amountLabel">今日已赚</p>
+          <h2 class="amount" id="earnedAmount">¥0.00</h2>
+        </div>
+
+        <div class="wallet-stage" id="walletStage">
+          <div class="flow-layer" id="flowLayer"></div>
+          <div class="wallet" id="wallet">
+            <div class="wallet-flap"></div>
+            <div class="wallet-body"></div>
+            <div class="wallet-mouth"></div>
+            <div class="wallet-lock"></div>
+          </div>
+        </div>
+
+        <div class="progress-block">
+          <div class="progress-meta">
+            <span id="workedTime">已工作 0 分钟</span>
+            <span id="remainingTime">距下班 0 分钟</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="work-actions">
+          <button class="small-action" id="earlyEndButton" type="button">提前下班</button>
+          <button class="small-action secondary hidden" id="resumeTodayButton" type="button">恢复计算</button>
+        </div>
+
+        <div class="slack-panel">
+          <div class="slack-head">
+            <div class="slack-title">摸鱼收入计时器</div>
+            <div class="slack-live" id="slackLive">未计时</div>
+          </div>
+          <div class="slack-visual" aria-hidden="true">
+            <div class="cute-fish"></div>
+            <div class="cute-roll"></div>
+            <div class="cute-coin">¥</div>
+            <div class="pond-line"></div>
+          </div>
+          <div class="timer-actions">
+            <button class="timer-button poop" id="poopTimerButton" type="button">开始拉屎</button>
+            <button class="timer-button" id="slackTimerButton" type="button">开始摸鱼</button>
+          </div>
+          <div class="slack-stats">
+            <div class="slack-stat">
+              <div class="slack-stat-label">今天摸鱼收入</div>
+              <div class="slack-stat-value" id="slackToday">¥0.00</div>
+            </div>
+            <div class="slack-stat">
+              <div class="slack-stat-label">本周摸鱼收入</div>
+              <div class="slack-stat-value" id="slackWeek">¥0.00</div>
+            </div>
+            <div class="slack-stat">
+              <div class="slack-stat-label">本月摸鱼收入</div>
+              <div class="slack-stat-value" id="slackMonth">¥0.00</div>
+            </div>
+          </div>
+          <div class="slack-subtext" id="slackBreakdown">拉屎 ¥0.00 · 摸鱼 ¥0.00</div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">日薪</div>
+            <div class="metric-value" id="dailyPay">¥0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">时薪</div>
+            <div class="metric-value" id="hourlyPay">¥0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">分钟薪</div>
+            <div class="metric-value" id="minutePay">¥0.00</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">秒薪</div>
+            <div class="metric-value" id="secondPay">¥0.0000</div>
+          </div>
+          <div class="metric hidden" id="monthlyTaxMetric">
+            <div class="metric-label">本月个税</div>
+            <div class="metric-value" id="monthlyTax">¥0.00</div>
+          </div>
+          <div class="metric hidden" id="netSalaryMetric">
+            <div class="metric-label">税后月薪</div>
+            <div class="metric-value" id="netSalary">¥0.00</div>
+          </div>
+        </div>
+
+        <div class="insight-panel">
+          <div class="insight-head">
+            <div class="insight-title">近 7 天效率波动</div>
+            <div class="insight-summary" id="insightSummary">暂无记录</div>
+          </div>
+          <div class="chart" id="historyChart">
+            <div class="chart-empty">提前下班或自然下班后，会记录今天的实际工时和实际时薪。</div>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-dot"></span>工作时长</span>
+            <span class="legend-item"><span class="legend-dot rate"></span>实际时薪</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer hidden" id="currencyDrawer" role="dialog" aria-modal="true" aria-labelledby="currencyTitle">
+    <div class="drawer-panel">
+      <div class="drawer-title" id="currencyTitle">选择币种</div>
+      <div id="currencyList"></div>
+      <div class="currency-note">币种切换仅改变输入和展示单位，不自动换算汇率。</div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "salary-wallet-mvp-config";
+    const HISTORY_KEY = "salary-wallet-mvp-history";
+    const SLACK_KEY = "salary-wallet-mvp-slack";
+    const CONFIG_VERSION = 1;
+    const TAX_FREE_THRESHOLD = 5000;
+    const MONTHLY_TAX_BRACKETS = [
+      { max: 3000, rate: 0.03, quickDeduction: 0 },
+      { max: 12000, rate: 0.10, quickDeduction: 210 },
+      { max: 25000, rate: 0.20, quickDeduction: 1410 },
+      { max: 35000, rate: 0.25, quickDeduction: 2660 },
+      { max: 55000, rate: 0.30, quickDeduction: 4410 },
+      { max: 80000, rate: 0.35, quickDeduction: 7160 },
+      { max: Infinity, rate: 0.45, quickDeduction: 15160 }
+    ];
+
+    const currencies = {
+      CNY: {
+        code: "CNY",
+        name: "人民币",
+        symbol: "¥",
+        noteTitle: "中国人民银行",
+        coinTitle: "RMB",
+        portrait: "¥",
+        decimals: 2,
+        notes: [100, 50, 20, 10, 5, 1],
+        coins: [1, 0.5, 0.1],
+        palette: {
+          100: "#f27b7b",
+          50: "#73b18c",
+          20: "#d8a967",
+          10: "#8db6e8",
+          5: "#c9a8e8",
+          1: "#dce7f7",
+          coin: "#d7a62c"
+        }
+      },
+      USD: {
+        code: "USD",
+        name: "美元",
+        symbol: "$",
+        noteTitle: "FEDERAL RESERVE",
+        coinTitle: "USD",
+        portrait: "$",
+        decimals: 2,
+        notes: [100, 50, 20, 10, 5, 1],
+        coins: [1, 0.25, 0.1],
+        palette: {
+          100: "#a9c9a7",
+          50: "#b7d8b4",
+          20: "#c1dfbe",
+          10: "#cbe6c7",
+          5: "#d5ebd0",
+          1: "#e0f0d9",
+          coin: "#c5ccd2"
+        }
+      },
+      HKD: {
+        code: "HKD",
+        name: "港币",
+        symbol: "HK$",
+        noteTitle: "HONG KONG",
+        coinTitle: "HKD",
+        portrait: "獅",
+        decimals: 2,
+        notes: [1000, 500, 100, 50, 20, 10],
+        coins: [10, 5, 2, 1],
+        palette: {
+          1000: "#d9878c",
+          500: "#c99bd7",
+          100: "#e8a66c",
+          50: "#8fb9e9",
+          20: "#9fd2a6",
+          10: "#dce7f7",
+          coin: "#d3a64a"
+        }
+      },
+      EUR: {
+        code: "EUR",
+        name: "欧元",
+        symbol: "€",
+        noteTitle: "EURO",
+        coinTitle: "EUR",
+        portrait: "€",
+        decimals: 2,
+        notes: [500, 200, 100, 50, 20, 10, 5],
+        coins: [2, 1, 0.5, 0.1],
+        palette: {
+          500: "#b59bd7",
+          200: "#e8c46b",
+          100: "#8ec9a1",
+          50: "#e89a87",
+          20: "#84b5df",
+          10: "#db8a92",
+          5: "#c7c7c7",
+          coin: "#d8a93d"
+        }
+      },
+      JPY: {
+        code: "JPY",
+        name: "日元",
+        symbol: "JP¥",
+        noteTitle: "日本銀行券",
+        coinTitle: "JPY",
+        portrait: "円",
+        decimals: 0,
+        notes: [10000, 5000, 2000, 1000],
+        coins: [500, 100, 50, 10, 5, 1],
+        palette: {
+          10000: "#cfc5a4",
+          5000: "#b8cfbd",
+          2000: "#bec8dc",
+          1000: "#d8c0b4",
+          coin: "#c7c7c7"
+        }
+      }
+    };
+
+    const defaultConfig = {
+      monthlySalary: "",
+      currency: "CNY",
+      taxEnabled: false,
+      socialDeduction: "",
+      specialDeduction: "",
+      workDaysPerMonth: 22,
+      startTime: "09:00",
+      endTime: "18:00"
+    };
+
+    const state = {
+      config: { ...defaultConfig },
+      hasConfig: false,
+      editing: false,
+      lastEarned: 0,
+      lastAnimationAt: 0,
+      history: [],
+      slackRecords: [],
+      activeSlack: null,
+      showPerSecond: false
+    };
+
+    const els = {
+      setupView: document.querySelector("#setupView"),
+      homeView: document.querySelector("#homeView"),
+      setupForm: document.querySelector("#setupForm"),
+      salaryInput: document.querySelector("#salaryInput"),
+      salaryPrefix: document.querySelector("#salaryPrefix"),
+      currencyInput: document.querySelector("#currencyInput"),
+      taxEnabledInput: document.querySelector("#taxEnabledInput"),
+      taxFields: document.querySelector("#taxFields"),
+      socialDeductionInput: document.querySelector("#socialDeductionInput"),
+      specialDeductionInput: document.querySelector("#specialDeductionInput"),
+      socialPrefix: document.querySelector("#socialPrefix"),
+      specialPrefix: document.querySelector("#specialPrefix"),
+      workDaysInput: document.querySelector("#workDaysInput"),
+      startTimeInput: document.querySelector("#startTimeInput"),
+      endTimeInput: document.querySelector("#endTimeInput"),
+      formError: document.querySelector("#formError"),
+      startButton: document.querySelector("#startButton"),
+      cancelEditButton: document.querySelector("#cancelEditButton"),
+      resetButton: document.querySelector("#resetButton"),
+      settingsButton: document.querySelector("#settingsButton"),
+      statusPill: document.querySelector("#statusPill"),
+      statusText: document.querySelector("#statusText"),
+      currencyButton: document.querySelector("#currencyButton"),
+      amountLabel: document.querySelector("#amountLabel"),
+      earnedAmount: document.querySelector("#earnedAmount"),
+      walletStage: document.querySelector("#walletStage"),
+      flowLayer: document.querySelector("#flowLayer"),
+      wallet: document.querySelector("#wallet"),
+      workedTime: document.querySelector("#workedTime"),
+      remainingTime: document.querySelector("#remainingTime"),
+      progressFill: document.querySelector("#progressFill"),
+      earlyEndButton: document.querySelector("#earlyEndButton"),
+      resumeTodayButton: document.querySelector("#resumeTodayButton"),
+      poopTimerButton: document.querySelector("#poopTimerButton"),
+      slackTimerButton: document.querySelector("#slackTimerButton"),
+      slackLive: document.querySelector("#slackLive"),
+      slackToday: document.querySelector("#slackToday"),
+      slackWeek: document.querySelector("#slackWeek"),
+      slackMonth: document.querySelector("#slackMonth"),
+      slackBreakdown: document.querySelector("#slackBreakdown"),
+      dailyPay: document.querySelector("#dailyPay"),
+      hourlyPay: document.querySelector("#hourlyPay"),
+      minutePay: document.querySelector("#minutePay"),
+      secondPay: document.querySelector("#secondPay"),
+      monthlyTaxMetric: document.querySelector("#monthlyTaxMetric"),
+      netSalaryMetric: document.querySelector("#netSalaryMetric"),
+      monthlyTax: document.querySelector("#monthlyTax"),
+      netSalary: document.querySelector("#netSalary"),
+      insightSummary: document.querySelector("#insightSummary"),
+      historyChart: document.querySelector("#historyChart"),
+      slackPanel: document.querySelector(".slack-panel"),
+      currencyDrawer: document.querySelector("#currencyDrawer"),
+      currencyList: document.querySelector("#currencyList")
+    };
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function parseTimeToSeconds(time) {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 3600 + minutes * 60;
+    }
+
+    function getTodaySeconds(date = new Date()) {
+      return date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+    }
+
+    function getDateKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function addDays(date, offset) {
+      const next = new Date(date);
+      next.setDate(next.getDate() + offset);
+      return next;
+    }
+
+    function getWeekdayLabel(date) {
+      return ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][date.getDay()];
+    }
+
+    function getMonthKey(date = new Date()) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    }
+
+    function getWeekStart(date = new Date()) {
+      const next = new Date(date);
+      const day = next.getDay() || 7;
+      next.setDate(next.getDate() - day + 1);
+      return getDateKey(next);
+    }
+
+    function sanitizeMoney(value) {
+      const cleaned = String(value).replace(/[^\d.]/g, "");
+      const parts = cleaned.split(".");
+      const head = parts[0] || "";
+      const tail = parts.length > 1 ? "." + parts.slice(1).join("").slice(0, 2) : "";
+      return head + tail;
+    }
+
+    function getCurrency() {
+      return currencies[state.config.currency] || currencies.CNY;
+    }
+
+    function hexToRgb(hex) {
+      const normalized = String(hex).replace("#", "");
+      const value = parseInt(normalized.length === 3
+        ? normalized.split("").map((part) => part + part).join("")
+        : normalized, 16);
+      return {
+        r: (value >> 16) & 255,
+        g: (value >> 8) & 255,
+        b: value & 255
+      };
+    }
+
+    function adjustColor(hex, amount) {
+      const rgb = hexToRgb(hex);
+      const next = [rgb.r, rgb.g, rgb.b].map((channel) => {
+        return clamp(Math.round(channel + amount), 0, 255).toString(16).padStart(2, "0");
+      });
+      return "#" + next.join("");
+    }
+
+    function getMoneyStyle(value, isCoin) {
+      const currency = getCurrency();
+      const base = isCoin ? currency.palette.coin : currency.palette[value] || currency.palette[currency.notes[currency.notes.length - 1]];
+      return {
+        base,
+        soft: adjustColor(base, 34),
+        deep: adjustColor(base, -54),
+        ink: adjustColor(base, -112)
+      };
+    }
+
+    function formatFaceValue(value) {
+      const currency = getCurrency();
+      if ((currency.code === "USD" || currency.code === "EUR") && value < 1) {
+        return Math.round(value * 100) + "¢";
+      }
+      if (currency.code === "CNY" && value < 1) {
+        return value === 0.5 ? "5角" : "1角";
+      }
+      return String(value);
+    }
+
+    function makeSerial(value) {
+      const currency = getCurrency();
+      const seed = Math.round(Number(value) * 137 + Date.now() % 997);
+      return currency.code + " " + String(seed).padStart(6, "0");
+    }
+
+    function createCnyStackMarkup() {
+      return `
+        <span class="rmb-layer"></span>
+        <span class="rmb-layer"></span>
+        <span class="rmb-layer"></span>
+        <span class="rmb-portrait"></span>
+        <span class="rmb-band"></span>
+        <span class="rmb-value">100</span>
+        <span class="rmb-title">中国人民银行</span>
+        <span class="rmb-flower"></span>
+        <span class="rmb-serial">BQ99250610</span>
+      `;
+    }
+
+    function formatMoney(value, options = {}) {
+      const currency = getCurrency();
+      const decimals = options.decimals ?? currency.decimals;
+      const amount = Number.isFinite(value) ? value : 0;
+      return currency.symbol + amount.toLocaleString("zh-CN", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    }
+
+    function formatDuration(totalSeconds) {
+      const seconds = Math.max(0, Math.floor(totalSeconds));
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      if (hours <= 0) return minutes + " 分钟";
+      if (minutes <= 0) return hours + " 小时";
+      return hours + " 小时 " + minutes + " 分钟";
+    }
+
+    function getTodayRecord(date = new Date()) {
+      const key = getDateKey(date);
+      return state.history.find((record) => record.date === key);
+    }
+
+    function saveHistory() {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history.slice(-60)));
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        state.history = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(state.history)) state.history = [];
+      } catch (error) {
+        state.history = [];
+      }
+    }
+
+    function saveSlackRecords() {
+      localStorage.setItem(SLACK_KEY, JSON.stringify(state.slackRecords.slice(-300)));
+    }
+
+    function loadSlackRecords() {
+      try {
+        const raw = localStorage.getItem(SLACK_KEY);
+        state.slackRecords = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(state.slackRecords)) state.slackRecords = [];
+      } catch (error) {
+        state.slackRecords = [];
+      }
+    }
+
+    function upsertHistoryRecord(record) {
+      const index = state.history.findIndex((item) => item.date === record.date);
+      if (index >= 0) {
+        state.history[index] = { ...state.history[index], ...record };
+      } else {
+        state.history.push(record);
+      }
+      state.history.sort((a, b) => a.date.localeCompare(b.date));
+      saveHistory();
+    }
+
+    function removeTodayRecord() {
+      const today = getDateKey();
+      state.history = state.history.filter((record) => record.date !== today);
+      saveHistory();
+    }
+
+    function buildWorkRecord(snapshot, mode) {
+      const actualSeconds = Math.max(60, Math.floor(snapshot.workedSeconds));
+      const actualHours = actualSeconds / 3600;
+      const actualHourly = snapshot.daily / actualHours;
+      return {
+        date: getDateKey(),
+        mode,
+        currency: state.config.currency,
+        taxEnabled: snapshot.taxEnabled,
+        startTime: state.config.startTime,
+        endTime: state.config.endTime,
+        actualEndTime: new Date().toTimeString().slice(0, 5),
+        workSeconds: actualSeconds,
+        dailyIncome: snapshot.daily,
+        actualHourly,
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    function calculateMonthlyTax(salary, socialDeduction, specialDeduction) {
+      const social = Number.isFinite(socialDeduction) ? socialDeduction : 0;
+      const special = Number.isFinite(specialDeduction) ? specialDeduction : 0;
+      const taxableIncome = Math.max(0, salary - social - special - TAX_FREE_THRESHOLD);
+      const bracket = MONTHLY_TAX_BRACKETS.find((item) => taxableIncome <= item.max) || MONTHLY_TAX_BRACKETS[0];
+      const monthlyTax = Math.max(0, taxableIncome * bracket.rate - bracket.quickDeduction);
+      const netSalary = Math.max(0, salary - social - monthlyTax);
+
+      return {
+        taxableIncome,
+        monthlyTax,
+        netSalary,
+        rate: bracket.rate,
+        quickDeduction: bracket.quickDeduction
+      };
+    }
+
+    function calculateSnapshot(now = new Date()) {
+      const salary = Number(state.config.monthlySalary);
+      const taxEnabled = Boolean(state.config.taxEnabled);
+      const socialDeduction = Number(state.config.socialDeduction) || 0;
+      const specialDeduction = Number(state.config.specialDeduction) || 0;
+      const tax = calculateMonthlyTax(salary, socialDeduction, specialDeduction);
+      const incomeSalary = taxEnabled ? tax.netSalary : salary;
+      const workDays = Number(state.config.workDaysPerMonth);
+      const start = parseTimeToSeconds(state.config.startTime);
+      const end = parseTimeToSeconds(state.config.endTime);
+      const totalSeconds = Math.max(1, end - start);
+      const current = getTodaySeconds(now);
+      const todayRecord = getTodayRecord(now);
+      const hasEndedToday = Boolean(todayRecord);
+      const workedSeconds = hasEndedToday
+        ? clamp(Number(todayRecord.workSeconds) || 0, 0, totalSeconds)
+        : clamp(current - start, 0, totalSeconds);
+      const daily = incomeSalary / workDays;
+      const hourly = daily / (totalSeconds / 3600);
+      const minute = hourly / 60;
+      const second = minute / 60;
+      const earned = hasEndedToday ? daily : second * workedSeconds;
+      const progress = workedSeconds / totalSeconds;
+
+      let status = "working";
+      if (current < start) status = "before";
+      if (current >= end) status = "after";
+      if (hasEndedToday) status = todayRecord.mode === "early" ? "early" : "after";
+
+      return {
+        status,
+        todayRecord,
+        hasEndedToday,
+        salary,
+        incomeSalary,
+        taxEnabled,
+        taxableIncome: tax.taxableIncome,
+        monthlyTax: tax.monthlyTax,
+        netSalary: tax.netSalary,
+        taxRate: tax.rate,
+        quickDeduction: tax.quickDeduction,
+        totalSeconds,
+        workedSeconds,
+        remainingSeconds: hasEndedToday ? 0 : Math.max(0, totalSeconds - workedSeconds),
+        daily,
+        hourly,
+        minute,
+        second,
+        earned,
+        progress
+      };
+    }
+
+    function validateConfig(config) {
+      const salary = Number(config.monthlySalary);
+      const workDays = Number(config.workDaysPerMonth);
+      const socialDeduction = Number(config.socialDeduction) || 0;
+      const specialDeduction = Number(config.specialDeduction) || 0;
+      const start = parseTimeToSeconds(config.startTime);
+      const end = parseTimeToSeconds(config.endTime);
+
+      if (!config.monthlySalary || !Number.isFinite(salary) || salary <= 0) {
+        return "请输入大于 0 的月薪";
+      }
+
+      if (salary > 999999) {
+        return "月薪上限为 999999";
+      }
+
+      if (config.taxEnabled && (socialDeduction < 0 || specialDeduction < 0)) {
+        return "扣除金额不能为负数";
+      }
+
+      if (config.taxEnabled && socialDeduction > salary) {
+        return "五险一金不能高于月薪";
+      }
+
+      if (!Number.isInteger(workDays) || workDays < 1 || workDays > 31) {
+        return "每月工作天数需为 1-31 天";
+      }
+
+      if (!config.startTime || !config.endTime || end <= start) {
+        return "下班时间需晚于上班时间";
+      }
+
+      return "";
+    }
+
+    function saveConfig() {
+      const payload = {
+        ...state.config,
+        configVersion: CONFIG_VERSION,
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      state.hasConfig = true;
+    }
+
+    function loadConfig() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        const loaded = {
+          ...defaultConfig,
+          monthlySalary: sanitizeMoney(parsed.monthlySalary),
+          currency: currencies[parsed.currency] ? parsed.currency : "CNY",
+          taxEnabled: Boolean(parsed.taxEnabled),
+          socialDeduction: sanitizeMoney(parsed.socialDeduction || ""),
+          specialDeduction: sanitizeMoney(parsed.specialDeduction || ""),
+          workDaysPerMonth: Number(parsed.workDaysPerMonth) || 22,
+          startTime: parsed.startTime || "09:00",
+          endTime: parsed.endTime || "18:00"
+        };
+        if (!validateConfig(loaded)) {
+          state.config = loaded;
+          state.hasConfig = true;
+        }
+      } catch (error) {
+        state.hasConfig = false;
+      }
+    }
+
+    function fillForm() {
+      els.salaryInput.value = state.config.monthlySalary;
+      els.currencyInput.value = state.config.currency;
+      els.salaryPrefix.textContent = getCurrency().symbol;
+      els.socialPrefix.textContent = getCurrency().symbol;
+      els.specialPrefix.textContent = getCurrency().symbol;
+      els.taxEnabledInput.checked = Boolean(state.config.taxEnabled);
+      els.taxFields.classList.toggle("hidden", !state.config.taxEnabled);
+      els.socialDeductionInput.value = state.config.socialDeduction;
+      els.specialDeductionInput.value = state.config.specialDeduction;
+      els.workDaysInput.value = state.config.workDaysPerMonth;
+      els.startTimeInput.value = state.config.startTime;
+      els.endTimeInput.value = state.config.endTime;
+    }
+
+    function readForm() {
+      return {
+        monthlySalary: sanitizeMoney(els.salaryInput.value),
+        currency: els.currencyInput.value,
+        taxEnabled: els.taxEnabledInput.checked,
+        socialDeduction: sanitizeMoney(els.socialDeductionInput.value),
+        specialDeduction: sanitizeMoney(els.specialDeductionInput.value),
+        workDaysPerMonth: Number(els.workDaysInput.value),
+        startTime: els.startTimeInput.value,
+        endTime: els.endTimeInput.value
+      };
+    }
+
+    function renderShell() {
+      const showHome = state.hasConfig && !state.editing;
+      els.homeView.classList.toggle("hidden", !showHome);
+      els.setupView.classList.toggle("hidden", showHome);
+      els.settingsButton.classList.toggle("hidden", !showHome);
+      els.cancelEditButton.classList.toggle("hidden", !state.editing);
+      els.resetButton.classList.toggle("hidden", !state.editing && !state.hasConfig);
+      els.startButton.textContent = state.editing ? "保存设置" : "开始赚钱";
+      fillForm();
+    }
+
+    function renderCurrencyOptions() {
+      els.currencyInput.innerHTML = Object.values(currencies).map((currency) => {
+        return `<option value="${currency.code}">${currency.code} ${currency.symbol} ${currency.name}</option>`;
+      }).join("");
+
+      els.currencyList.innerHTML = Object.values(currencies).map((currency) => {
+        const selected = currency.code === state.config.currency ? "✓" : "";
+        return `
+          <button class="currency-item" type="button" data-currency="${currency.code}">
+            <span>
+              <span class="currency-name">${currency.code} ${currency.symbol}</span>
+              <span class="hint">${currency.name}</span>
+            </span>
+            <strong>${selected}</strong>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function getRecordByDate(key) {
+      return state.history.find((record) => record.date === key);
+    }
+
+    function average(values) {
+      const valid = values.filter((value) => Number.isFinite(value));
+      if (!valid.length) return 0;
+      return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+    }
+
+    function getSlackTypeName(type) {
+      return type === "poop" ? "拉屎" : "摸鱼";
+    }
+
+    function summarizeSlack(scope) {
+      const today = getDateKey();
+      const weekStart = getWeekStart();
+      const month = getMonthKey();
+      const records = state.slackRecords.filter((record) => {
+        if (scope === "today") return record.date === today;
+        if (scope === "week") return record.weekStart === weekStart;
+        if (scope === "month") return record.month === month;
+        return false;
+      });
+      return records.reduce((summary, record) => {
+        summary.income += Number(record.income) || 0;
+        summary.seconds += Number(record.seconds) || 0;
+        summary.poopIncome += record.type === "poop" ? Number(record.income) || 0 : 0;
+        summary.slackIncome += record.type === "slack" ? Number(record.income) || 0 : 0;
+        return summary;
+      }, { income: 0, seconds: 0, poopIncome: 0, slackIncome: 0 });
+    }
+
+    function renderSlackStats(snapshot = calculateSnapshot()) {
+      const today = summarizeSlack("today");
+      const week = summarizeSlack("week");
+      const month = summarizeSlack("month");
+      els.slackToday.textContent = formatMoney(today.income);
+      els.slackWeek.textContent = formatMoney(week.income);
+      els.slackMonth.textContent = formatMoney(month.income);
+      els.slackBreakdown.textContent = `今天拉屎 ${formatMoney(today.poopIncome)} · 摸鱼 ${formatMoney(today.slackIncome)} · ${formatDuration(today.seconds)}`;
+
+      if (state.activeSlack) {
+        const elapsed = Math.max(0, Math.floor((Date.now() - state.activeSlack.startedAt) / 1000));
+        const income = elapsed * state.activeSlack.secondIncome;
+        els.slackLive.textContent = `${getSlackTypeName(state.activeSlack.type)}回血中 ${formatDuration(elapsed)} · ${formatMoney(income)}`;
+      } else {
+        els.slackLive.textContent = snapshot.status === "working" ? "小鱼待命" : "工作中才可开溜";
+      }
+
+      els.poopTimerButton.textContent = state.activeSlack?.type === "poop" ? "带薪归来" : "蹲坑回血";
+      els.slackTimerButton.textContent = state.activeSlack?.type === "slack" ? "收网回工位" : "开始摸鱼";
+      els.poopTimerButton.classList.toggle("active", state.activeSlack?.type === "poop");
+      els.slackTimerButton.classList.toggle("active", state.activeSlack?.type === "slack");
+      els.slackPanel.classList.toggle("active-poop", state.activeSlack?.type === "poop");
+      els.slackPanel.classList.toggle("active-slack", state.activeSlack?.type === "slack");
+      els.poopTimerButton.disabled = snapshot.status !== "working" && state.activeSlack?.type !== "poop";
+      els.slackTimerButton.disabled = snapshot.status !== "working" && state.activeSlack?.type !== "slack";
+    }
+
+    function renderHistory() {
+      const today = new Date();
+      const days = Array.from({ length: 7 }, (_, index) => addDays(today, index - 6));
+      const records = days.map((date) => {
+        const key = getDateKey(date);
+        return { date, key, record: getRecordByDate(key) };
+      });
+      const visibleRecords = records.filter((item) => item.record);
+
+      if (!visibleRecords.length) {
+        els.insightSummary.textContent = "暂无记录";
+        els.historyChart.innerHTML = '<div class="chart-empty">提前下班或自然下班后，会记录今天的实际工时和实际时薪。</div>';
+        return;
+      }
+
+      const maxHours = Math.max(...visibleRecords.map((item) => item.record.workSeconds / 3600), 1);
+      const maxRate = Math.max(...visibleRecords.map((item) => item.record.actualHourly), 1);
+      els.historyChart.innerHTML = records.map((item) => {
+        const record = item.record;
+        const hours = record ? record.workSeconds / 3600 : 0;
+        const rate = record ? record.actualHourly : 0;
+        const hoursHeight = record ? Math.max(6, Math.round((hours / maxHours) * 92)) : 4;
+        const rateHeight = record ? Math.max(6, Math.round((rate / maxRate) * 92)) : 4;
+        return `
+          <div class="chart-day">
+            <div class="bars" title="${record ? `${hours.toFixed(1)}小时 / ${formatMoney(rate)}` : '暂无记录'}">
+              <span class="bar hours" style="height:${hoursHeight}px; opacity:${record ? 1 : 0.18}"></span>
+              <span class="bar rate" style="height:${rateHeight}px; opacity:${record ? 1 : 0.18}"></span>
+            </div>
+            <div class="chart-label">${getWeekdayLabel(item.date)}</div>
+          </div>
+        `;
+      }).join("");
+
+      const currentWeekRates = visibleRecords.map((item) => item.record.actualHourly);
+      const previousStart = addDays(today, -13);
+      const previousEnd = addDays(today, -7);
+      const previousRates = state.history
+        .filter((record) => record.date >= getDateKey(previousStart) && record.date <= getDateKey(previousEnd))
+        .map((record) => record.actualHourly);
+      const currentAvg = average(currentWeekRates);
+      const previousAvg = average(previousRates);
+      const change = previousAvg ? ((currentAvg - previousAvg) / previousAvg) * 100 : 0;
+      const changeText = previousAvg ? `环比${change >= 0 ? '+' : ''}${change.toFixed(1)}%` : "暂无环比";
+      els.insightSummary.textContent = `本周均时薪 ${formatMoney(currentAvg)} · ${changeText}`;
+    }
+
+    function renderHome() {
+      if (!state.hasConfig || state.editing) return;
+
+      const snapshot = calculateSnapshot();
+      const currency = getCurrency();
+      const endedSecond = snapshot.hasEndedToday ? snapshot.todayRecord.actualHourly / 3600 : snapshot.second;
+      const amountToShow = state.showPerSecond ? endedSecond : snapshot.earned;
+      const nextAmountText = state.showPerSecond
+        ? formatMoney(amountToShow, { decimals: currency.decimals === 0 ? 2 : 4 })
+        : formatMoney(amountToShow);
+
+      if (els.earnedAmount.textContent !== nextAmountText) {
+        els.earnedAmount.classList.remove("bump");
+        void els.earnedAmount.offsetWidth;
+        els.earnedAmount.classList.add("bump");
+      }
+
+      els.amountLabel.textContent = state.showPerSecond ? "每秒收入" : "今日已赚";
+      if (snapshot.taxEnabled) {
+        els.amountLabel.textContent = state.showPerSecond ? "税后每秒收入" : "今日税后已赚";
+      }
+      els.earnedAmount.textContent = nextAmountText;
+      els.currencyButton.textContent = currency.code + " " + currency.symbol;
+      els.dailyPay.previousElementSibling.textContent = snapshot.taxEnabled ? "税后日薪" : "日薪";
+      els.hourlyPay.previousElementSibling.textContent = snapshot.hasEndedToday ? "今日实际时薪" : (snapshot.taxEnabled ? "税后时薪" : "时薪");
+      els.minutePay.previousElementSibling.textContent = snapshot.hasEndedToday ? "实际分钟薪" : (snapshot.taxEnabled ? "税后分钟薪" : "分钟薪");
+      els.secondPay.previousElementSibling.textContent = snapshot.hasEndedToday ? "实际秒薪" : (snapshot.taxEnabled ? "税后秒薪" : "秒薪");
+      const displayHourly = snapshot.hasEndedToday ? snapshot.todayRecord.actualHourly : snapshot.hourly;
+      const displayMinute = displayHourly / 60;
+      const displaySecond = displayMinute / 60;
+      els.dailyPay.textContent = formatMoney(snapshot.daily);
+      els.hourlyPay.textContent = formatMoney(displayHourly);
+      els.minutePay.textContent = formatMoney(displayMinute);
+      els.secondPay.textContent = formatMoney(displaySecond, { decimals: currency.decimals === 0 ? 2 : 4 });
+      els.monthlyTaxMetric.classList.toggle("hidden", !snapshot.taxEnabled);
+      els.netSalaryMetric.classList.toggle("hidden", !snapshot.taxEnabled);
+      els.monthlyTax.textContent = formatMoney(snapshot.monthlyTax);
+      els.netSalary.textContent = formatMoney(snapshot.netSalary);
+      els.progressFill.style.width = Math.round(snapshot.progress * 100) + "%";
+
+      if (snapshot.status === "before") {
+        els.statusText.textContent = "未开始";
+        els.statusPill.style.background = "#f3f4f6";
+        els.statusPill.style.color = "#4b5563";
+        els.workedTime.textContent = "已工作 0 分钟";
+        els.remainingTime.textContent = "距上班 " + formatDuration(parseTimeToSeconds(state.config.startTime) - getTodaySeconds());
+      } else if (snapshot.status === "early") {
+        els.statusText.textContent = "已提前下班";
+        els.statusPill.style.background = "#eef8f2";
+        els.statusPill.style.color = "#08733f";
+        els.workedTime.textContent = "今日工时 " + formatDuration(snapshot.workedSeconds);
+        els.remainingTime.textContent = "实际时薪 " + formatMoney(snapshot.todayRecord.actualHourly);
+      } else if (snapshot.status === "after") {
+        els.statusText.textContent = "已下班";
+        els.statusPill.style.background = "#fff7ed";
+        els.statusPill.style.color = "#9a5b00";
+        els.workedTime.textContent = snapshot.hasEndedToday ? "今日工时 " + formatDuration(snapshot.workedSeconds) : "今日已赚完";
+        els.remainingTime.textContent = snapshot.hasEndedToday ? "实际时薪 " + formatMoney(snapshot.todayRecord.actualHourly) : "明天继续到账";
+      } else {
+        els.statusText.textContent = "工作中";
+        els.statusPill.style.background = "#eef8f2";
+        els.statusPill.style.color = "#08733f";
+        els.workedTime.textContent = "已工作 " + formatDuration(snapshot.workedSeconds);
+        els.remainingTime.textContent = "距下班 " + formatDuration(snapshot.remainingSeconds);
+      }
+
+      els.earlyEndButton.disabled = snapshot.status !== "working";
+      els.earlyEndButton.classList.toggle("hidden", snapshot.hasEndedToday);
+      els.resumeTodayButton.classList.toggle("hidden", !snapshot.hasEndedToday);
+      if (snapshot.status === "after" && !snapshot.hasEndedToday) {
+        upsertHistoryRecord(buildWorkRecord({ ...snapshot, workedSeconds: snapshot.totalSeconds }, "scheduled"));
+      }
+      renderHistory();
+      renderSlackStats(snapshot);
+      maybeAnimateMoney(snapshot);
+      state.lastEarned = snapshot.earned;
+    }
+
+    function pickMoneyItems(delta) {
+      const currency = getCurrency();
+      const amount = Math.max(delta, currency.coins[currency.coins.length - 1] || 0.1);
+      const pool = amount >= Math.min(...currency.notes) ? currency.notes : currency.coins;
+      const ordered = [...pool].sort((a, b) => b - a);
+      const picked = [];
+      let rest = amount;
+
+      for (const value of ordered) {
+        if (picked.length >= 5) break;
+        if (value <= rest) {
+          picked.push(value);
+          rest -= value;
+        }
+      }
+
+      if (picked.length) return picked;
+
+      const smallest = ordered[ordered.length - 1];
+      return [smallest];
+    }
+
+    function maybeAnimateMoney(snapshot) {
+      const now = Date.now();
+      if (snapshot.status !== "working") return;
+      if (now - state.lastAnimationAt < 680) return;
+
+      const visualIncome = Math.max(snapshot.earned - state.lastEarned, snapshot.second * 60);
+      const delta = Math.max(visualIncome, snapshot.second > 0 ? 1 : 0.1);
+      const items = pickMoneyItems(delta);
+      items.forEach((value, index) => {
+        window.setTimeout(() => createMoney(value), index * 72);
+      });
+      popWallet();
+      state.lastAnimationAt = now;
+    }
+
+    function createMoney(value) {
+      const currency = getCurrency();
+      const isCoin = currency.coins.includes(value);
+      const isCnyStack = currency.code === "CNY";
+      const style = getMoneyStyle(value, isCoin);
+      const faceValue = formatFaceValue(value);
+      const money = document.createElement("div");
+      const stageWidth = els.walletStage.clientWidth || 360;
+      const moneyHalfWidth = isCnyStack ? 48 : (isCoin ? 21 : 42);
+      const walletTargetX = stageWidth / 2 + 50 - moneyHalfWidth;
+      const fromX = isCnyStack
+        ? Math.max(16, walletTargetX - 138 + Math.random() * 38)
+        : stageWidth / 2 - moneyHalfWidth + (-110 + Math.random() * 220);
+      const fromY = isCnyStack ? 58 + Math.random() * 10 : 10 + Math.random() * 34;
+      const targetX = walletTargetX - fromX + (-3 + Math.random() * 6);
+      const targetY = (isCnyStack ? 103 : 130) - fromY + (-2 + Math.random() * 6);
+      const arcX = targetX * (isCnyStack ? 0.55 : 0.5) + (-10 + Math.random() * 20);
+      const arcY = targetY * (isCnyStack ? 0.74 : 0.54) + (-4 + Math.random() * 8);
+      money.className = "money " + (isCnyStack ? "cny-stack" : (isCoin ? "coin" : "note"));
+      money.innerHTML = isCnyStack
+        ? createCnyStackMarkup()
+        : isCoin
+        ? `<span class="coin-inner"><span class="coin-mark">${currency.portrait}</span><span>${faceValue}</span><span class="coin-code">${currency.coinTitle}</span></span>`
+        : `
+          <span class="note-watermark">${currency.portrait}</span>
+          <span class="note-ribbon"></span>
+          <span class="note-band"></span>
+          <span class="note-value">${faceValue}</span>
+          <span class="note-value-corner">${faceValue}</span>
+          <span class="note-title">${currency.noteTitle}</span>
+          <span class="note-portrait">${currency.portrait}</span>
+          <span class="note-lines"></span>
+          <span class="note-code">${currency.code}</span>
+          <span class="note-serial">${makeSerial(value)}</span>
+          <span class="note-seal"></span>
+        `;
+      money.style.setProperty("--from-x", fromX + "px");
+      money.style.setProperty("--from-y", fromY + "px");
+      money.style.setProperty("--arc-x", arcX + "px");
+      money.style.setProperty("--arc-y", arcY + "px");
+      money.style.setProperty("--to-x", targetX + "px");
+      money.style.setProperty("--to-y", targetY + "px");
+      money.style.setProperty("--rotate", (isCnyStack ? -8 + Math.random() * 7 : -18 + Math.random() * 36) + "deg");
+      money.style.setProperty("--duration", (isCnyStack ? 1320 + Math.random() * 220 : 1120 + Math.random() * 260) + "ms");
+      money.style.setProperty("--money-color", style.base);
+      money.style.setProperty("--money-soft", style.soft);
+      money.style.setProperty("--money-deep", style.deep);
+      money.style.setProperty("--money-ink", style.ink);
+      els.flowLayer.appendChild(money);
+      window.setTimeout(() => money.remove(), 1700);
+    }
+
+    function popWallet() {
+      els.wallet.classList.remove("pop");
+      void els.wallet.offsetWidth;
+      els.wallet.classList.add("pop");
+    }
+
+    function setEditing(isEditing) {
+      state.editing = isEditing;
+      els.formError.textContent = "";
+      renderShell();
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      const nextConfig = readForm();
+      const error = validateConfig(nextConfig);
+
+      if (error) {
+        els.formError.textContent = error;
+        return;
+      }
+
+      state.config = nextConfig;
+      try {
+        saveConfig();
+        state.editing = false;
+        state.lastEarned = calculateSnapshot().earned;
+        renderCurrencyOptions();
+        renderShell();
+        renderHome();
+      } catch (error) {
+        els.formError.textContent = "设置保存失败，请重试";
+      }
+    }
+
+    function resetConfig() {
+      const confirmed = window.confirm("确认重置工资和工作时间设置？");
+      if (!confirmed) return;
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(HISTORY_KEY);
+      localStorage.removeItem(SLACK_KEY);
+      state.config = { ...defaultConfig };
+      state.history = [];
+      state.slackRecords = [];
+      state.activeSlack = null;
+      state.hasConfig = false;
+      state.editing = false;
+      state.showPerSecond = false;
+      renderCurrencyOptions();
+      renderShell();
+    }
+
+    function endTodayEarly() {
+      const snapshot = calculateSnapshot();
+      if (snapshot.status !== "working") return;
+      if (state.activeSlack) finishSlackTimer();
+      upsertHistoryRecord(buildWorkRecord(snapshot, "early"));
+      renderHome();
+    }
+
+    function resumeToday() {
+      removeTodayRecord();
+      renderHome();
+    }
+
+    function startSlackTimer(type) {
+      const snapshot = calculateSnapshot();
+      if (snapshot.status !== "working") return;
+      state.activeSlack = {
+        type,
+        startedAt: Date.now(),
+        secondIncome: snapshot.second
+      };
+      renderSlackStats(snapshot);
+    }
+
+    function finishSlackTimer() {
+      if (!state.activeSlack) return;
+      const endedAt = Date.now();
+      const seconds = Math.max(1, Math.floor((endedAt - state.activeSlack.startedAt) / 1000));
+      const income = seconds * state.activeSlack.secondIncome;
+      const startDate = new Date(state.activeSlack.startedAt);
+      state.slackRecords.push({
+        id: `${state.activeSlack.startedAt}-${state.activeSlack.type}`,
+        type: state.activeSlack.type,
+        date: getDateKey(startDate),
+        weekStart: getWeekStart(startDate),
+        month: getMonthKey(startDate),
+        startedAt: new Date(state.activeSlack.startedAt).toISOString(),
+        endedAt: new Date(endedAt).toISOString(),
+        seconds,
+        secondIncome: state.activeSlack.secondIncome,
+        income,
+        currency: state.config.currency,
+        taxEnabled: Boolean(state.config.taxEnabled)
+      });
+      state.activeSlack = null;
+      saveSlackRecords();
+      renderHome();
+    }
+
+    function toggleSlackTimer(type) {
+      if (state.activeSlack?.type === type) {
+        finishSlackTimer();
+        return;
+      }
+      if (state.activeSlack) finishSlackTimer();
+      startSlackTimer(type);
+    }
+
+    function initEvents() {
+      els.setupForm.addEventListener("submit", handleSubmit);
+
+      els.salaryInput.addEventListener("input", () => {
+        els.salaryInput.value = sanitizeMoney(els.salaryInput.value);
+      });
+
+      els.socialDeductionInput.addEventListener("input", () => {
+        els.socialDeductionInput.value = sanitizeMoney(els.socialDeductionInput.value);
+      });
+
+      els.specialDeductionInput.addEventListener("input", () => {
+        els.specialDeductionInput.value = sanitizeMoney(els.specialDeductionInput.value);
+      });
+
+      els.currencyInput.addEventListener("change", () => {
+        state.config.currency = els.currencyInput.value;
+        els.salaryPrefix.textContent = getCurrency().symbol;
+        els.socialPrefix.textContent = getCurrency().symbol;
+        els.specialPrefix.textContent = getCurrency().symbol;
+      });
+
+      els.taxEnabledInput.addEventListener("change", () => {
+        state.config.taxEnabled = els.taxEnabledInput.checked;
+        els.taxFields.classList.toggle("hidden", !els.taxEnabledInput.checked);
+      });
+
+      els.settingsButton.addEventListener("click", () => setEditing(true));
+      els.cancelEditButton.addEventListener("click", () => setEditing(false));
+      els.resetButton.addEventListener("click", resetConfig);
+      els.earlyEndButton.addEventListener("click", endTodayEarly);
+      els.resumeTodayButton.addEventListener("click", resumeToday);
+      els.poopTimerButton.addEventListener("click", () => toggleSlackTimer("poop"));
+      els.slackTimerButton.addEventListener("click", () => toggleSlackTimer("slack"));
+
+      els.currencyButton.addEventListener("click", () => {
+        renderCurrencyOptions();
+        els.currencyDrawer.classList.remove("hidden");
+      });
+
+      els.currencyDrawer.addEventListener("click", (event) => {
+        if (event.target === els.currencyDrawer) {
+          els.currencyDrawer.classList.add("hidden");
+        }
+      });
+
+      els.currencyList.addEventListener("click", (event) => {
+        const item = event.target.closest("[data-currency]");
+        if (!item) return;
+        state.config.currency = item.dataset.currency;
+        saveConfig();
+        renderCurrencyOptions();
+        renderHome();
+        els.currencyDrawer.classList.add("hidden");
+      });
+
+      els.walletStage.addEventListener("click", () => {
+        if (!state.hasConfig) return;
+        const snapshot = calculateSnapshot();
+        pickMoneyItems(Math.max(snapshot.second * 180, 20)).forEach((value, index) => {
+          window.setTimeout(() => createMoney(value), index * 70);
+        });
+        popWallet();
+      });
+
+      els.earnedAmount.addEventListener("click", () => {
+        state.showPerSecond = !state.showPerSecond;
+        renderHome();
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) renderHome();
+      });
+    }
+
+    function init() {
+      renderCurrencyOptions();
+      loadConfig();
+      loadHistory();
+      loadSlackRecords();
+      fillForm();
+      initEvents();
+      renderShell();
+      state.lastEarned = state.hasConfig ? calculateSnapshot().earned : 0;
+      renderHome();
+      window.setInterval(renderHome, 500);
+    }
+
+    init();
+  </script>
+</body>
+</html>
