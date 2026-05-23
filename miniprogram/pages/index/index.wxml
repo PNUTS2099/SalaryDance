@@ -1,0 +1,216 @@
+<view class="page">
+  <view class="app-shell">
+    <view class="topbar">
+      <text class="brand">薪跳</text>
+      <view class="top-actions" wx:if="{{hasConfig}}">
+        <button class="icon-button" bindtap="onEdit" wx:if="{{!editing}}">⚙</button>
+        <button class="icon-button danger" bindtap="onReset">↺</button>
+      </view>
+    </view>
+
+    <view wx:if="{{!hasConfig || editing}}" class="setup-view">
+      <view class="hero-copy">
+        <text class="hero-title">让工资到账的每一秒都看得见</text>
+        <text class="subtext">设置月薪、工作日和上下班时间，薪跳会实时计算今日收入。</text>
+      </view>
+
+      <view class="field-list">
+        <view class="field">
+          <text class="label">月薪</text>
+          <view class="input-wrap">
+            <text class="prefix">{{currencyList[currencyIndex].symbol}}</text>
+            <input type="digit" value="{{config.monthlySalary}}" data-field="monthlySalary" bindinput="onMoneyInput" placeholder="例如 22000" />
+          </view>
+        </view>
+
+        <view class="field">
+          <text class="label">币种</text>
+          <picker mode="selector" range="{{currencyList}}" range-key="name" value="{{currencyIndex}}" bindchange="onCurrencyChange">
+            <view class="input-wrap picker-value">
+              <text>{{currencyList[currencyIndex].name}}</text>
+              <text class="muted">{{currencyList[currencyIndex].code}}</text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="switch-field">
+          <view>
+            <text class="switch-title">按税后收入计算</text>
+            <text class="switch-desc">使用月度个税速算扣除估算。</text>
+          </view>
+          <switch checked="{{config.taxEnabled}}" color="#19a15f" bindchange="onTaxSwitch" />
+        </view>
+
+        <view wx:if="{{config.taxEnabled}}" class="tax-fields">
+          <view class="field">
+            <text class="label">五险一金</text>
+            <view class="input-wrap">
+              <text class="prefix">{{currencyList[currencyIndex].symbol}}</text>
+              <input type="digit" value="{{config.socialDeduction}}" data-field="socialDeduction" bindinput="onMoneyInput" placeholder="每月扣除" />
+            </view>
+          </view>
+
+          <view class="field">
+            <text class="label">专项附加扣除</text>
+            <view class="input-wrap">
+              <text class="prefix">{{currencyList[currencyIndex].symbol}}</text>
+              <input type="digit" value="{{config.specialDeduction}}" data-field="specialDeduction" bindinput="onMoneyInput" placeholder="可选" />
+            </view>
+          </view>
+        </view>
+
+        <view class="field">
+          <text class="label">每月工作天数</text>
+          <view class="input-wrap">
+            <input type="number" value="{{config.workDaysPerMonth}}" data-field="workDaysPerMonth" bindinput="onNumberInput" />
+          </view>
+        </view>
+
+        <view class="time-grid">
+          <view class="field">
+            <text class="label">上班时间</text>
+            <view class="input-wrap">
+              <input value="{{config.startTime}}" data-field="startTime" bindinput="onNumberInput" placeholder="09:00" />
+            </view>
+          </view>
+          <view class="field">
+            <text class="label">下班时间</text>
+            <view class="input-wrap">
+              <input value="{{config.endTime}}" data-field="endTime" bindinput="onNumberInput" placeholder="18:00" />
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <text class="form-error" wx:if="{{formError}}">{{formError}}</text>
+      <view class="button-row">
+        <button class="primary" bindtap="onStart">{{editing ? '保存设置' : '开始到账'}}</button>
+        <button class="ghost" wx:if="{{editing}}" bindtap="onCancelEdit">取消</button>
+      </view>
+    </view>
+
+    <view wx:else class="home-view">
+      <view class="status-row">
+        <view class="status-pill {{display.statusClass}}">
+          <text>{{display.statusText}}</text>
+        </view>
+        <button class="currency-button" bindtap="onOpenCurrencySheet">{{display.currencyBadge}}</button>
+      </view>
+
+      <view class="amount-block" bindtap="onTogglePerSecond">
+        <text class="amount-label">{{display.amountLabel}}</text>
+        <text class="amount">{{display.earnedAmount}}</text>
+      </view>
+
+      <view class="wallet-stage" bindtap="refreshHome">
+        <view class="money-layer">
+          <text wx:for="{{moneyItems}}" wx:key="id" class="{{item.className}}" style="{{item.style}}">{{item.label}}</text>
+        </view>
+        <view class="wallet">
+          <view class="wallet-mouth"></view>
+          <view class="wallet-body">
+            <text class="wallet-mark">PAY</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="progress-card">
+        <view class="progress-copy">
+          <text>{{display.workedTime}}</text>
+          <text>{{display.remainingTime}}</text>
+        </view>
+        <view class="progress-track">
+          <view class="progress-fill" style="width: {{display.progressPercent}}%;"></view>
+        </view>
+        <view class="action-row">
+          <button class="small-action" disabled="{{!display.canEndEarly}}" bindtap="onEndTodayEarly">提前下班</button>
+          <button class="small-action secondary" wx:if="{{display.canResumeToday}}" bindtap="onResumeToday">恢复计算</button>
+        </view>
+      </view>
+
+      <view class="slack-panel {{display.slackPanelClass}}">
+        <view class="slack-head">
+          <text class="section-title">摸鱼收入计时器</text>
+          <text class="slack-live">{{display.slackLive}}</text>
+        </view>
+        <view class="slack-visual">
+          <view class="cute-fish"></view>
+          <view class="cute-roll"></view>
+          <view class="cute-coin"></view>
+        </view>
+        <view class="timer-row">
+          <button class="timer-button {{display.poopActive ? 'active' : ''}}" disabled="{{!display.canPoopButton}}" data-type="poop" bindtap="onToggleSlack">{{display.poopButton}}</button>
+          <button class="timer-button {{display.slackActive ? 'active' : ''}}" disabled="{{!display.canSlackButton}}" data-type="slack" bindtap="onToggleSlack">{{display.slackButton}}</button>
+        </view>
+        <view class="slack-stats">
+          <view class="slack-stat">
+            <text class="stat-label">今天摸鱼收入</text>
+            <text class="stat-value">{{display.slackToday}}</text>
+          </view>
+          <view class="slack-stat">
+            <text class="stat-label">本周摸鱼收入</text>
+            <text class="stat-value">{{display.slackWeek}}</text>
+          </view>
+          <view class="slack-stat">
+            <text class="stat-label">本月摸鱼收入</text>
+            <text class="stat-value">{{display.slackMonth}}</text>
+          </view>
+        </view>
+        <text class="slack-breakdown">{{display.slackBreakdown}}</text>
+      </view>
+
+      <view class="metrics">
+        <view class="metric">
+          <text class="metric-label">{{display.dailyLabel}}</text>
+          <text class="metric-value">{{display.dailyPay}}</text>
+        </view>
+        <view class="metric">
+          <text class="metric-label">{{display.hourlyLabel}}</text>
+          <text class="metric-value">{{display.hourlyPay}}</text>
+        </view>
+        <view class="metric">
+          <text class="metric-label">{{display.minuteLabel}}</text>
+          <text class="metric-value">{{display.minutePay}}</text>
+        </view>
+        <view class="metric">
+          <text class="metric-label">{{display.secondLabel}}</text>
+          <text class="metric-value">{{display.secondPay}}</text>
+        </view>
+        <view class="metric" wx:if="{{config.taxEnabled}}">
+          <text class="metric-label">本月个税</text>
+          <text class="metric-value">{{display.monthlyTax}}</text>
+        </view>
+        <view class="metric" wx:if="{{config.taxEnabled}}">
+          <text class="metric-label">税后月薪</text>
+          <text class="metric-value">{{display.netSalary}}</text>
+        </view>
+      </view>
+
+      <view class="history-section">
+        <view class="history-head">
+          <text class="section-title">近 7 天实际时薪</text>
+          <text class="insight">{{display.insightSummary}}</text>
+        </view>
+        <view class="chart">
+          <view class="chart-day" wx:for="{{historyBars}}" wx:key="key">
+            <view class="bars">
+              <view class="bar hours" style="height: {{item.hoursHeight}}rpx; opacity: {{item.hasRecord ? 1 : 0.18}};"></view>
+              <view class="bar rate" style="height: {{item.rateHeight}}rpx; opacity: {{item.hasRecord ? 1 : 0.18}};"></view>
+            </view>
+            <text class="chart-label">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showCurrencySheet}}" class="drawer-mask" bindtap="onCloseCurrencySheet">
+    <view class="drawer" catchtap="noop">
+      <text class="drawer-title">切换币种</text>
+      <button wx:for="{{currencyList}}" wx:key="code" class="currency-item {{item.code === config.currency ? 'selected' : ''}}" data-code="{{item.code}}" bindtap="onPickCurrency">
+        <text>{{item.name}}</text>
+        <text>{{item.code}} {{item.symbol}}</text>
+      </button>
+    </view>
+  </view>
+</view>
